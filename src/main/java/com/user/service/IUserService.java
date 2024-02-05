@@ -3,6 +3,7 @@ package com.user.service;
 import com.user.exceptions.BusinessException;
 import com.user.exceptions.ResourceNotFoundException;
 import com.user.models.request.SignInRequest;
+import com.user.pojo.Address;
 import com.user.pojo.User;
 
 import java.util.List;
@@ -34,4 +35,12 @@ public interface IUserService {
      */
     User getProfile(int id) throws BusinessException, Exception;
 
+    /**
+     * Get User Addresses for given user
+     *
+     * @param userId User IDENTIFIER
+     * @return List of Address for given User Id
+     * @throws BusinessException BusinessException
+     */
+    List<Address> getAddress(Integer userId) throws BusinessException, Exception;
 }

@@ -85,9 +85,11 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
+    @JsonProperty("addresses")
+    transient private List<Address> addresses;
+
     @Override
     public String toString() {
-
         return "User{" +
                 "userId=" + userId +
                 ", name='" + name + '\'' +
@@ -97,6 +99,7 @@ public class User {
                 ", status=" + status +
                 ", role=" + role +
                 ", date=" + date +
+                ", addresses=" + addresses +
                 '}';
     }
 }

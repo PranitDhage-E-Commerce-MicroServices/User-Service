@@ -6,6 +6,7 @@ import com.user.exceptions.SystemException;
 import com.user.models.request.SignInRequest;
 import com.user.models.response.APIResponseEntity;
 import com.user.pojo.User;
+import com.user.pojo.Address;
 import com.user.service.IUserService;
 import com.user.utils.Constants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,10 +26,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.bind.ValidationException;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -173,4 +176,48 @@ public class UserController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    /**
+     * Get all the addresses for given user
+     *
+     * @param userId User IDENTIFIER
+     * @return List of Addresses for given User Id
+     * @throws BusinessException BusinessException
+     * @throws SystemException   SystemException
+     */
+    @Operation(summary = "Get all the addresses for given user",
+            description = "This API is used to get all the addresses for the User with given userId",
+            tags = {"Checks"},
+            method = "GET"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "400", description = "Unexpected Error", content = @Content(schema = @Schema(implementation = Error.class))),
+                    @ApiResponse(responseCode = "403", description = "Access Denied - User is either invalid or is not entitled to requested api action", content = @Content(schema = @Schema(implementation = Error.class))),
+                    @ApiResponse(responseCode = "404", description = "Entity Not Found", content = @Content(schema = @Schema(implementation = Error.class))),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = Error.class)))
+            }
+    )
+    @GetMapping(
+            value = "/address/list/{userId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<APIResponseEntity<List<Address>>> getAllAddressList(
+            @Parameter(description = "User Identifier", required = true) @PathVariable("userId") Integer userId
+    ) throws Exception {
+
+        log.info("Getting all addresses for given User Id: {}", userId);
+
+        List<Address> allAddresses = userService.getAddress(userId);
+
+        APIResponseEntity<List<Address>> response =
+                new APIResponseEntity<>(
+                        Constants.STATUS_SUCCESS,
+                        Constants.SUCCESS_CODE,
+                        allAddresses);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

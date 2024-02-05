@@ -4,19 +4,24 @@ import com.user.exceptions.AuthenticationException;
 import com.user.exceptions.BusinessException;
 import com.user.exceptions.ResourceNotFoundException;
 import com.user.models.request.SignInRequest;
+import com.user.models.response.APIResponseEntity;
+import com.user.pojo.Address;
 import com.user.pojo.Role;
 import com.user.pojo.User;
 import com.user.repository.CredentialsRepository;
 import com.user.repository.UserRepository;
+import com.user.service.IAddressClient;
 import com.user.service.IUserService;
 import com.user.token.TokenRepository;
 import com.user.utils.Constants;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -30,14 +35,18 @@ public class UserServiceImpl implements IUserService {
 
     final private TokenRepository tokenRepository;
 
+    final private IAddressClient addressClient;
+
     @Autowired
     public UserServiceImpl(final UserRepository userRepo,
                            final CredentialsRepository credentialsRepo,
-                           final TokenRepository tokenRepository) {
+                           final TokenRepository tokenRepository,
+                           final IAddressClient addressClient) {
 
         this.userRepo = userRepo;
         this.credentialsRepo = credentialsRepo;
         this.tokenRepository = tokenRepository;
+        this.addressClient = addressClient;
     }
 
     @Override
@@ -90,6 +99,18 @@ public class UserServiceImpl implements IUserService {
             throw new BusinessException(e.getMessage(), e.getCode());
         } catch (Exception e) {
             log.info("Exception occurred while getting User Profile for User Id: {}", id);
+            throw new BusinessException(e.getMessage(), Constants.ERR_BUSINESS);
+        }
+    }
+
+    @Override
+    public List<Address> getAddress(Integer userId) throws BusinessException, Exception {
+
+        try {
+            APIResponseEntity<List<Address>> response = addressClient.getAddresses(userId);
+            return response.getData();
+        } catch (Exception e) {
+            log.info("Exception occurred while getting User Addresses for User Id: {}", userId);
             throw new BusinessException(e.getMessage(), Constants.ERR_BUSINESS);
         }
     }
