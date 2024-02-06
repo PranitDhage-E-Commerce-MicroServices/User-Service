@@ -24,10 +24,10 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
 # Eureka Client Configuration
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
 
 #logging.level.org.springframework.orm.hibernate5=DEBUG
 logging:
