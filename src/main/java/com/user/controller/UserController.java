@@ -5,8 +5,10 @@ import com.user.exceptions.BusinessException;
 import com.user.exceptions.SystemException;
 import com.user.models.request.SignInRequest;
 import com.user.models.response.APIResponseEntity;
-import com.user.pojo.User;
+import com.user.models.response.AuthenticationResponse;
 import com.user.pojo.Address;
+import com.user.pojo.User;
+import com.user.security.LogoutService;
 import com.user.service.IUserService;
 import com.user.utils.Constants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +28,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,9 +44,13 @@ public class UserController {
 
     private final IUserService userService;
 
+    private final LogoutService logoutService;
+
     @Autowired
-    public UserController(final IUserService userService) {
+    public UserController(final IUserService userService,
+                          final LogoutService logoutService) {
         this.userService = userService;
+        this.logoutService = logoutService;
     }
 
     /**
@@ -73,15 +80,15 @@ public class UserController {
             value = "/login",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<APIResponseEntity<User>> userSignIn(
+    public ResponseEntity<APIResponseEntity<AuthenticationResponse>> userSignIn(
             @Parameter(description = "Login Request", required = true) @RequestBody @Valid SignInRequest user
     ) throws AuthenticationException, BusinessException, SystemException {
 
         log.info("Logging in User Request: {}", user);
 
-        User auth = userService.userSignIn(user);
+        AuthenticationResponse auth = userService.userSignIn(user);
 
-        APIResponseEntity<User> response = new APIResponseEntity<>(
+        APIResponseEntity<AuthenticationResponse> response = new APIResponseEntity<>(
                 Constants.STATUS_SUCCESS,
                 Constants.SUCCESS_CODE,
                 auth
@@ -117,15 +124,15 @@ public class UserController {
             value = "/signup",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<APIResponseEntity<User>> userSignup(
+    public ResponseEntity<APIResponseEntity<AuthenticationResponse>> userSignup(
             @Parameter(description = "Signup Request", required = true) @RequestBody @Valid User user
     ) throws ValidationException, BusinessException, SystemException {
 
         log.info("Signing up New User Request: {}", user);
 
-        User authResponse = userService.userSignup(user);
+        AuthenticationResponse authResponse = userService.userSignup(user);
 
-        APIResponseEntity<User> response = new APIResponseEntity<>(
+        APIResponseEntity<AuthenticationResponse> response = new APIResponseEntity<>(
                 Constants.STATUS_SUCCESS,
                 Constants.SUCCESS_CODE,
                 authResponse

@@ -3,7 +3,9 @@ package com.user.service;
 import com.user.exceptions.BusinessException;
 import com.user.exceptions.ResourceNotFoundException;
 import com.user.models.request.SignInRequest;
+import com.user.models.response.AuthenticationResponse;
 import com.user.pojo.Address;
+import com.user.pojo.Credentials;
 import com.user.pojo.User;
 
 import java.util.List;
@@ -16,7 +18,15 @@ public interface IUserService {
      * @param user User Login Request Body
      * @return Authorization Response with JWT Token
      */
-    User userSignIn(SignInRequest user) throws  BusinessException, ResourceNotFoundException;
+    AuthenticationResponse userSignIn(SignInRequest user) throws  BusinessException, ResourceNotFoundException;
+
+    /**
+     * User Login
+     *
+     * @param credentials User Credentials Request Body
+     * @return Authorization Response with JWT Token
+     */
+    Credentials addNewAuth(Credentials credentials) throws BusinessException;
 
     /**
      * New User Signup
@@ -24,7 +34,7 @@ public interface IUserService {
      * @param user User Signup Request Body
      * @return Authorization Response with JWT Token
      */
-    User userSignup(User user) throws  BusinessException, ResourceNotFoundException;
+    AuthenticationResponse userSignup(User user) throws  BusinessException, ResourceNotFoundException;
 
     /**
      * Get User Profile for given user
